@@ -33,4 +33,12 @@ public class Human {
         this.age = age;
     }
 
+    public static int compareByNameThenAge(Human lhs, Human rhs) {
+        if (lhs.name.equals(rhs.name)) {
+            return Integer.compare(lhs.age, rhs.age);
+        } else {
+            return lhs.name.compareTo(rhs.name);
+        }
+    }
+
 }

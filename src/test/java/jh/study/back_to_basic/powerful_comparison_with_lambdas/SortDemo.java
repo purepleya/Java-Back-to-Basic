@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class BasicSortWithoutLambdasDemo {
+public class SortDemo {
 
     @Test
     @Order(0)
@@ -76,7 +76,6 @@ public class BasicSortWithoutLambdasDemo {
     @Test
     @Order(4)
     void givenInstanceMethod_whenSortingEntitiesByName_thenCorrectlySorted() {
-
         List<Human> humans = Arrays.asList(
                 new Human("Sarah", 10),
                 new Human("Jack", 12)

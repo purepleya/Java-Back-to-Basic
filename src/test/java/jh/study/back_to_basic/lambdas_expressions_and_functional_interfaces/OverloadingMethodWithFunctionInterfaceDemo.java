@@ -19,6 +19,7 @@ public class OverloadingMethodWithFunctionInterfaceDemo {
         }
     }
 
+    /*
     @Test
     void testOverloading() {
         Process process = new Process();
@@ -27,7 +28,7 @@ public class OverloadingMethodWithFunctionInterfaceDemo {
         String result = process.process(() -> "abc");
         assertEquals("abc", result);
     }
-
+    */
     public class Process2 {
         public String processWithCallable(Callable<String> c) throws Exception {
             return c.call();

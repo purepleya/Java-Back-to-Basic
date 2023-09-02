@@ -3,6 +3,8 @@ package jh.study.back_to_basic.lambdas_expressions_and_functional_interfaces;
 import java.util.function.Consumer;
 
 public class EffectivelyFinalDemo {
+
+    /*
     public void method() {
         String localVariable = "Local";
 
@@ -12,6 +14,7 @@ public class EffectivelyFinalDemo {
             return localVariable;
         };
     }
+    */
 
     class ParameterType {
         private String value;

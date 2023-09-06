@@ -2,9 +2,14 @@ package jh.study.back_to_basic.guide_to_java_8_optional;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CreatingOptionalObjectDemo {
@@ -241,5 +246,111 @@ public class CreatingOptionalObjectDemo {
         assertEquals("john", name);
     }
 
+
+
+
+    private Optional<String> getEmpty() {
+        System.out.println("get empty optional");
+        return Optional.empty();
+    }
+
+    private Optional<String> getHello() {
+        System.out.println("get hello optional");
+        return Optional.of("hello");
+    }
+
+    private Optional<String> getBye() {
+        System.out.println("get bye optional");
+        return Optional.of("bye");
+    }
+
+    @Test
+    void givenThreeOptionals_whenChaining_thenFirstNonEmptyIsReturned() {
+        Optional<String> found = Stream.of(getEmpty(), getHello(), getBye())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+
+        assertEquals(getHello(), found);
+    }
+
+    @Test
+    void givenThreeOptionals_whenChaining_thenFirstNonEmptyIsReturnedAndRestNotEvaluated() {
+        Optional<String> found = Stream.<Supplier<Optional<String>>>of(this::getEmpty, this::getHello, this::getBye)
+                .map(Supplier::get)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        
+        assertEquals(getHello(), found);
+    }
+
+
+    private Optional<String> createOptional(String input) {
+        System.out.println("get input optional : " + String.valueOf(input));
+
+        if (input == null || "".equals(input) || "empty".equals(input)) {
+            return Optional.empty();
+        }
+        return Optional.of(input);
+    }
+
+    @Test
+    void givenTwoOptionalsReturnedByOneArgMethod_whenChaining_thenFirstNonEmptyIsReturned() {
+        Optional<String> found = Stream.<Supplier<Optional<String>>>of(
+                        () -> createOptional("empty"),
+                        () -> createOptional("hello")
+                )
+                .map(Supplier::get)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+
+        assertEquals(createOptional("hello"), found);
+    }
+
+    @Test
+    void givenOptional_whenPresentAndEmpty_thenShouldTakeAValueFromItAndOr() {
+        String expected = "properValue";
+        Optional<String> value = Optional.of(expected);
+        Optional<String> emptyValue = Optional.ofNullable(null);
+        Optional<String> defaultValue = Optional.of("default");
+
+        Optional<String> result = value.or(() -> defaultValue);
+        assertEquals(expected, result.get());
+
+        Optional<String> result2 = emptyValue.or(() -> defaultValue);
+        assertEquals("default", result2.get());
+    }
+
+
+    @Test
+    void givenOptional_whenPresentAndNotPresent_thenShouldExecuteProperCallback() {
+        Optional<String> value = Optional.of("properValue");
+        Optional<String> emptyValue = Optional.ofNullable(null);
+
+        value.ifPresentOrElse(
+                v -> System.out.println("properValue = " + v),
+                () -> System.out.println("properValue is absent")
+        );
+        // properValue = properValue
+
+
+        emptyValue.ifPresentOrElse(
+                v -> System.out.println("emptyValue = " + v),
+                () -> System.out.println("emptyValue is absent")
+        );
+        // emptyValue is absent
+    }
+
+
+    @Test
+    void givenOptionalOfSome_whenToStream_thenShouldTreatItAsOneElementStream() {
+        Optional<String> value = Optional.of("a");
+
+        List<String> collect = value.stream().map(String::toUpperCase).collect(Collectors.toList());
+
+        assertThat(collect).hasSameElementsAs(List.of("A"));
+    }
 
 }

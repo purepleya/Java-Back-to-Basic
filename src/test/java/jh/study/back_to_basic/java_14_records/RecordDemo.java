@@ -1,5 +1,6 @@
 package jh.study.back_to_basic.java_14_records;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,10 +58,8 @@ public class RecordDemo {
     }
 
     public record SimplePersonRecord(String name, int age) {
-        public SimplePersonRecord {
-            if (age < 0) {
-                throw new IllegalArgumentException("age must be positive");
-            }
+        public void print() {
+            System.out.println("name: " + name + ", age: " + age);
         }
     }
 
@@ -125,6 +124,21 @@ public class RecordDemo {
     @DisplayName("Constructor 에 validation 추가")
     void constructorValidationTest() {
         assertThrows(IllegalArgumentException.class, () -> new SimplePersonRecord("John", -1));
+    }
+
+
+    @Test
+    @DisplayName("Record Serialization, Deserialization Test")
+    void recordSerializationTest() throws Exception {
+        SimplePersonRecord person = new SimplePersonRecord("John", 20);
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(person);
+
+        System.out.println(json);
+        assertEquals("{\"name\":\"John\",\"age\":20}", json);
+
+        SimplePersonRecord person2 = mapper.readValue(json, SimplePersonRecord.class);
+        assertEquals(person, person2);
     }
 
 }
